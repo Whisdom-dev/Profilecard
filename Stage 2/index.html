@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Color Guessing Game</title>
+  <style>
+    /* Base Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #b4a8a8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #b5b2b2;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 10px 0;
+    }
+
+    /* Color Box (Target Color) */
+    .color-box {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      border: 3px solid #333;
+      border-radius: 8px;
+    }
+
+    /* Game Instructions, Status, and Score */
+    [data-testid="gameInstructions"],
+    [data-testid="gameStatus"],
+    [data-testid="score"] {
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+
+    /* Color Option Buttons */
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .color-option {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.5s;
+    }
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    /* New Game Button */
+    .new-game {
+      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .new-game:hover {
+      background: #555;
+    }
+
+    /* Animations */
+    @keyframes fade {
+      from { opacity: 1; }
+      to { opacity: 0.3; }
+    }
+    .fade {
+      animation: fade 0.5s forwards;
+    }
+    @keyframes correctAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .correct {
+      animation: correctAnimation 0.5s forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .color-box {
+        width: 120px;
+        height: 120px;
+      }
+      .color-option {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Color Guessing Game</h1>
+    <p data-testid="gameInstructions">Guess the correct color!</p>
+    <div class="color-box" data-testid="colorBox"></div>
+    
+    <div class="options">
+      <!-- 6 color option buttons -->
+      <button class="color-option" data-testid="colorOption"></button>
+      <button class="color-option" data-testid="colorOption"></button>
+      <button class="color-option" data-testid="colorOption"></button>
+      <button class="color-option" data-testid="colorOption"></button>
+      <button class="color-option" data-testid="colorOption"></button>
+      <button class="color-option" data-testid="colorOption"></button>
+    </div>
+    
+    <p data-testid="gameStatus">Make a guess!</p>
+    <p>Score: <span data-testid="score">0</span></p>
+    <button class="new-game" data-testid="newGameButton">New Game</button>
+  </div>
+
+  <script>
+    // Predefined colors (6 options)
+    const colors = [
+      "#FF5733",
+      "#33FF57",
+      "#3357FF",
+      "#F3FF33",
+      "#FF33F3",
+      "#33FFF3"
+    ];
+    
+    let targetColor = "";
+    let score = 0;
+    
+    // Selecting required elements using data-testid attributes
+    const colorBox = document.querySelector('[data-testid="colorBox"]');
+    const gameInstructions = document.querySelector('[data-testid="gameInstructions"]');
+    const gameStatus = document.querySelector('[data-testid="gameStatus"]');
+    const scoreDisplay = document.querySelector('[data-testid="score"]');
+    const colorOptionButtons = document.querySelectorAll('[data-testid="colorOption"]');
+    const newGameButton = document.querySelector('[data-testid="newGameButton"]');
+    
+    // Utility function to shuffle an array (Fisher-Yates could be used, but this is simpler)
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+    
+    // Convert Hex color to RGB string format ("rgb(r, g, b)")
+    function hexToRGB(hex) {
+      hex = hex.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    
+    // Initialize or reset the game
+    function newGame() {
+      gameStatus.textContent = "Make a guess!";
+      
+      // Shuffle colors and choose a random target from the options
+      const shuffledColors = shuffle([...colors]);
+      targetColor = shuffledColors[Math.floor(Math.random() * shuffledColors.length)];
+      colorBox.style.backgroundColor = targetColor;
+      
+      // Assign each button a color from the shuffled list
+      colorOptionButtons.forEach((button, index) => {
+        button.style.backgroundColor = shuffledColors[index];
+        button.disabled = false; // Re-enable buttons if they were disabled
+        button.classList.remove("fade", "correct"); // Remove any animation classes
+      });
+    }
+    
+    // Handle user's guess
+    colorOptionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        // Because browsers may convert hex to rgb, compare in RGB format
+        if (button.style.backgroundColor.toUpperCase() === hexToRGB(targetColor).toUpperCase()) {
+          gameStatus.textContent = "Correct!";
+          score++;
+          scoreDisplay.textContent = score;
+          button.classList.add("correct");
+          // Disable all buttons to prevent further guesses until new game is started
+          colorOptionButtons.forEach(btn => btn.disabled = true);
+        } else {
+          gameStatus.textContent = "Wrong guess, try again!";
+          button.classList.add("fade");
+        }
+      });
+    });
+    
+    // Attach event listener for New Game button
+    newGameButton.addEventListener("click", newGame);
+    
+    // Start the game on page load
+    newGame();
+  </script>
+</body>
+</html>
