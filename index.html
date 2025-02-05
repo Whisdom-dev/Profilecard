@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Profile Card</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --card-bg: white;
+            --accent-color: #4CAF50;
+        }
+        body.dark-mode {
+            --bg-color: #222;
+            --text-color: #f4f4f4;
+            --card-bg: #333;
+            --accent-color: #FFD700;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+
+        h2, h3 {
+            margin: 10px 0;
+        }
+
+        .social-links a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: var(--accent-color);
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.2);
+        }
+
+        .toggle-theme {
+            margin-top: 15px;
+            padding: 8px 12px;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-theme:hover {
+            background: #555;
+        }
+
+        .utc-time {
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="Whisdom.jpg" alt="Profile Picture" class="profile-img" data-testid="profilePicture">
+        <h2 data-testid="fullName">Whisdom Ukae</h2>
+        <h3 data-testid="jobTitle">Frontend Developer</h3>
+        <p data-testid="shortBio">Passionate about crafting user-friendly interfaces and bringing designs to life with code.</p>
+        <p data-testid="currentLocation">📍 Owerri, Nigeria</p>
+        <p data-testid="emailAddress">📧 whizddaniel@gmail.com</p>
+    
+        <div class="social-links" data-testid="socialLinks">
+            <a href="https://LinkedIn.com" target="_blank">🔗 LinkedIn</a>
+            <a href="https://github.com" target="_blank">💻 GitHub</a>
+            <a href="https://twitter.com" target="_blank">X-Twitter</a>
+        </div>
+    
+        <p class="utc-time" data-testid="currentTimeUTC">UTC Time: Loading...</p>
+    
+        <button class="toggle-theme" onclick="toggleTheme()">Switch Theme</button>
+    </div>
+    
+    <script>
+        function updateTime() {
+            const utcTimeElement = document.querySelector(".utc-time");
+            setInterval(() => {
+                const now = new Date();
+                utcTimeElement.innerText = "UTC Time: " + now.toUTCString();
+            }, 1000);
+        }
+    
+        function toggleTheme() {
+            document.body.classList.toggle("dark-mode");
+        }
+    
+        updateTime();
+    </script>
+    
+</body>
+</html>
